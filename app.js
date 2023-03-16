@@ -2,15 +2,29 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const cors = require('cors');
+const cors = require('cors')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var productsRouter = require('./routes/products');
+const productsRouter = require('./routes/products');
+
+require("dotenv").config();
+
+const MongoClient = require("mongodb").MongoClient;
 
 var app = express();
 
 app.use(cors());
+
+MongoClient.connect(process.env.MONGODB_URI)
+.then(client => {
+  console.log("Databasen är ok!");
+
+  const db = client.db("projekt1")
+  app.locals.db = db;
+})
+.catch(err => console.log("err", err))
+
 
 app.use(logger('dev'));
 app.use(express.json());
